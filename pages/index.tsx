@@ -3,17 +3,23 @@ import Layout from '@components/Layout/Layout'
 import KawaiiHeader from '@components/KawaiiHeader/KawaiiHeader'
 import ProductList from '@components/ProductList/ProductList'
 
-const HomePage = () => {
-  const [productList, setProductList] = useState<TProduct[]>([])
+import fetch from 'isomorphic-unfetch'; //este paquete funcionara tanto para el cliente, como para el server
 
-  useEffect(() => {
-    window
-      .fetch('/api/avo')
-      .then((response) => response.json())
-      .then(({ data }: TAPIAvoResponse) => {
-        setProductList(data)
-      })
-  }, [])
+
+//Todo lo que ocurra en la siguiente arrow function ocurrira en el lado del servidor
+export const getServerSideProps= async()=>{
+  const response= await fetch('https://platzi-avo.vercel.app/api/avo')
+  const {data:productList}:TAPIAvoResponse = await response.json()
+
+  return{
+    props:{
+      productList,
+    }
+  }
+}
+
+const HomePage = ({productList}:{productsList:TProduct[]}) => {
+
 
   return (
     <Layout>
